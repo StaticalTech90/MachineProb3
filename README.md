@@ -1,6 +1,6 @@
 # MachineProb3
-
-### Application Specifications:
+Exercise on user-defined functions, conditions, loops, branching, casting, array and return.
+## Application Specifications:
 * userWord and embeddedWord must be from the program arguements(String args[])
 * count the number of each character occurence and display it on the table using ASCII table.
 * count the number of visible characters
@@ -11,7 +11,7 @@
 * User picture must appear on the PDF File.
 
 
-### Sample Output:
+## Sample Output:
 
 Enter word/s: Hello Woreld ->input //From args[]
 
@@ -48,3 +48,7 @@ Number of Invisble characters: 1
 Total Characters: 12
 
 No of embedded searched word: 2
+
+Words of Wisdom
+
+> Now starting to be a better person.
