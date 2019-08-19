@@ -49,6 +49,6 @@ Total Characters: 12
 
 No of embedded searched word: 2
 
-Words of Wisdom
+##Words of Wisdom
 
 > Now starting to be a better person.
