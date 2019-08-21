@@ -102,7 +102,7 @@ public class WordTableView {
 			}
 		
 		} //END OF FOR LOOP PRINTING
-		
+		System.out.println("Summary:");
 		System.out.println("Total visible characters: " + totalVisi);
 		System.out.println("Total invisible characters: " + totalInvi);
 		System.out.println("Total number of characters: " + countVisibleInvisibleCharacters(totalVisi, totalInvi));
@@ -139,18 +139,19 @@ public class WordTableView {
 				new FileOutputStream("E:\\ASCIITable1.pdf"));
 		
 		asciiDoc.open();
-		
-		PdfPTable asciiTable = new PdfPTable(3); //Specifies to have 3 COLUMNS
-		
 		/*
 		 * COLUMN IDENTIFIERS && PDF APPEARANCE
 		 */
+		
+		PdfPTable asciiTable = new PdfPTable(3); //Specifies to have 3 COLUMNS
+		
 		Font headerFont = FontFactory.getFont(FontFactory.TIMES,18,BaseColor.BLACK);
 		Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD,24,BaseColor.BLACK);
 		Font subTitleFont = FontFactory.getFont(FontFactory.COURIER,19,BaseColor.DARK_GRAY);
 		
 		Paragraph deciCodeParagraph = new Paragraph("Decimal Code",headerFont);
 		Paragraph charSymbolParagrapj = new Paragraph("Character",headerFont);
+		Paragraph summaryTextParagraph = new Paragraph("Summary:");
 		Paragraph occNumParagraph = new Paragraph("Occurances", headerFont);
 		Paragraph pdfTitleParagraph = new Paragraph("Magday's ASCII Table",titleFont);
 		Paragraph totalVisibleCharParagraph = new Paragraph("Total visible characters: "
@@ -170,6 +171,7 @@ public class WordTableView {
 		
 		pdfTitleParagraph.setAlignment(Element.ALIGN_CENTER);
 		
+		summaryTextParagraph.setIndentationLeft(50f);
 		totalVisibleCharParagraph.setIndentationLeft(50f);
 		totalInvisibleCharParagraph.setIndentationLeft(50f);
 		totalCharactersParagraph.setIndentationLeft(50f);
@@ -226,6 +228,7 @@ public class WordTableView {
 		
 		asciiDoc.add(asciiTable);
 		//Bottom Section of PDF
+		asciiDoc.add(summaryTextParagraph);
 		asciiDoc.add(totalVisibleCharParagraph);
 		asciiDoc.add(totalInvisibleCharParagraph);
 		asciiDoc.add(totalCharactersParagraph);
