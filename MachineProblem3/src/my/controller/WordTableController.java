@@ -18,7 +18,7 @@ public class WordTableController {
 			myTableData.setUserWord(args[0]);
 			myTableData.setEmbeddedWord(args[1]);
 			WordTableView.printToPDF(myTableData);
-//			WordTableView.displayAscii(myTableData);
+//			WordTableView.printToConsole(myTableData);
 			System.out.println(System.getProperty("os.name"));
 		}
 	}

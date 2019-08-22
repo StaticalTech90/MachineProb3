@@ -32,3 +32,4 @@ record separator
 unit separator	
 Space		
 DEL
+nbsp	
