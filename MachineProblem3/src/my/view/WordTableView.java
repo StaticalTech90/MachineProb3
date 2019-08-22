@@ -121,6 +121,8 @@ public class WordTableView {
 		/*
 		 * Some variables
 		 */
+		final String typeLinux = "Linux";
+//		final String typeWindows = "Windows";
 		char userWordArr[] = dataTable.getUserWord().toCharArray();
 		int frequencyArr[] = new int[userWordArr.length];
 		int totalVisibleChar = countVisibleCharacters(dataTable.getUserWord());
@@ -128,15 +130,23 @@ public class WordTableView {
 		int totalCharacters = countVisibleInvisibleCharacters(totalVisibleChar, totalInvisibleChar);
 		int freqOfEmbeddedWord = countEmbeddedWord(dataTable.getUserWord(), dataTable.getEmbeddedWord());
 		String[] inviCharWorded = new String[34]; //Wording out invisible characters based on ASCII Table description
+		String osType = System.getProperty("os.name");
+		String docLoc = "";
 		
 		charOccurances(userWordArr, frequencyArr);
 		initializeInviCharArr(inviCharWorded);
 		/*
 		 * Initialize the PDF
 		 */
-		Document asciiDoc = new Document(); 
+		Document asciiDoc = new Document();
+		if(osType.equalsIgnoreCase(typeLinux)) {
+			docLoc = "/home/marcelo/Documents/asciiTable.pdf"; //Me programming on my linux laptop
+		}
+		else {
+			docLoc = "E:\\asciiTable.pdf"; //TODO Change loc @ School
+		}
 		PdfWriter.getInstance(asciiDoc, 
-				new FileOutputStream("E:\\ASCIITable1.pdf"));
+				new FileOutputStream(docLoc));
 		
 		asciiDoc.open();
 		/*
@@ -234,10 +244,11 @@ public class WordTableView {
 		asciiDoc.add(totalCharactersParagraph);
 		asciiDoc.add(freqOfEmbeddedWordParagraph);
 		
-		String imgLoc = "E:\\progger.png"; //Change @school
-		Image img = Image.getInstance(imgLoc);
-		img.setAlignment(Element.ALIGN_CENTER);
-		asciiDoc.add(img);
+		//TODO Change @ School
+//		String imgLoc = "E:\\progger.png"; //Change @school
+//		Image img = Image.getInstance(imgLoc);
+//		img.setAlignment(Element.ALIGN_CENTER);
+//		asciiDoc.add(img);
 		
 		//FLUSH CONTENTS TO PDF
 		asciiDoc.close();

@@ -11,10 +11,15 @@ public class WordTableController {
 	public static void main(String[] args) throws IOException, DocumentException {
 		WordTable myTableData = new WordTable();
 		
-		myTableData.setUserWord(args[0]);
-		myTableData.setEmbeddedWord(args[1]);
-		WordTableView.printToPDF(myTableData);
-		WordTableView.displayAscii(myTableData);
-		
+		if(args.length == 0) {
+			System.out.println("NO DATA IS IN THE ARGUMENTS");
+		}
+		else {
+			myTableData.setUserWord(args[0]);
+			myTableData.setEmbeddedWord(args[1]);
+			WordTableView.printToPDF(myTableData);
+//			WordTableView.displayAscii(myTableData);
+			System.out.println(System.getProperty("os.name"));
+		}
 	}
 }
