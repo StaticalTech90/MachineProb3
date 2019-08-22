@@ -3,7 +3,6 @@ package my.model;
 public class WordTable {
 	private String userWord;
 	private String embeddedWord;
-	
 	public String getUserWord() {
 		return userWord;
 	}
