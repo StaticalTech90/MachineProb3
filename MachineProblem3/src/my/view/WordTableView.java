@@ -40,15 +40,14 @@ public class WordTableView {
 		/*
 		 * Initialize Some variables
 		 */
-		String[] inviCharWorded = new String[35]; // 0 - 32 && 127 && 255 ASCII
-		char[] extendedAsciiArr = initializeExtendedAsciiArr(); // 127 - 254
- 				
 		int totalVisi = countVisibleCharacters(dataTable.getUserWord());
 		int totalInvi = countInvisibleCharacters(dataTable.getUserWord());
 		int totalEmbdWord = countEmbeddedWord(dataTable.getUserWord(), dataTable.getEmbeddedWord());
 		int charFrequency[] = new int[dataTable.getUserWord().length()];
 		
-		char userWordAsCharArray[] = countCharOccurances(dataTable.getUserWord(), charFrequency);
+		String[] inviCharWorded = new String[35]; // 0 - 32 && 127 && 255 ASCII
+		char[] extendedAsciiArr = initializeExtendedAsciiArr(); // 127 - 254
+		char userWordAsCharArray[] = countCharOccurances(dataTable.getUserWord(), charFrequency);		
 		
 		initializeInviCharArr(inviCharWorded);
 		
@@ -80,6 +79,7 @@ public class WordTableView {
 					System.out.println("0");
 				}
 			}
+			//Extended Ascii
 			else if(i > 127 && i < 255) {
 				System.out.print(i+"\t"+ extendedAsciiArr[i-128] +"\t\t\t");
 				if(hasSymbol(Character.toString(extendedAsciiArr[i-128]), dataTable.getUserWord())) {
@@ -89,6 +89,7 @@ public class WordTableView {
 					System.out.println("0");
 				}
 			}
+			//Standard Printable Char
 			else {
 				System.out.print(i+"\t"+ symbol +"\t\t\t");
 				if(hasSymbol(Character.toString(symbol), dataTable.getUserWord())) {
@@ -239,30 +240,35 @@ public class WordTableView {
 		char extendedAsciiArr[] = initializeExtendedAsciiArr();
 		int total = 0; //ONE POINT OF EXIT
 		for(int ctr = 0; ctr < userWord.length();ctr++) {
+			/*
+			 * If the char at userWord[ctr] is above the invisible letter but under the DEL(128)
+			 * Add to total
+			 */
 			if(userWord.charAt(ctr) < 127 && userWord.charAt(ctr) > 32) {
-				System.out.println(total  + " first");
 				total++;
 			}
-			for (int i = ctr; i < extendedAsciiArr.length; i++) {
-				if(userWord.charAt(ctr) == extendedAsciiArr[i]) {
-					System.out.println(total + " PT1 : 2nd");
-					total++;
-					System.out.println(total + " PT1 : 2nd");
+			/*
+			 * Check if the char doesn't fall under the standard ASCII 128 Table
+			 * If it's greater than 128 but under the Extended ASCII Table, add +1 to total
+			 */
+			else if (userWord.charAt(ctr) > 127) {
+				for (int i = 0; i < extendedAsciiArr.length; i++) {
+					if(userWord.charAt(ctr) == extendedAsciiArr[i]) {
+						total++;
+					}	
 				}
-				
 			}
-				
 		}
 		
 		return total;
 	}
 	
-	private static int countInvisibleCharacters(String userWord){
-		char userCharArr[] = userWord.toCharArray();
-		
+	private static int countInvisibleCharacters(String userWord) throws IOException{
+		String inviCharWorded[] = new String [35];
+		initializeInviCharArr(inviCharWorded);
 		int total = 0;
-		for(int ctr = 0; ctr < userCharArr.length;ctr++) {
-			if(userCharArr[ctr] < 33 || userCharArr[ctr] == 127)
+		for(int ctr = 0; ctr < userWord.length();ctr++) {
+			if(userWord.charAt(ctr) < 33 || userWord.charAt(ctr) == 127 || userWord.equals(inviCharWorded[34]))
 				total+=1;
 		}
 		
@@ -310,27 +316,29 @@ public class WordTableView {
 	 * OTHERS
 	 */
 	private static void initializeInviCharArr(String inviChars[]) throws FileNotFoundException, IOException {
-		BufferedReader reader = UserInputHelper.getInviAsciiFromFile();
+		BufferedReader reader = UserInputHelper.getInviAsciiFromFile();//Open File
 		for(int ctr = 0; ctr < inviChars.length; ctr++) {
-			inviChars[ctr] = reader.readLine();
+			inviChars[ctr] = reader.readLine(); //Store contents of each line of the file to a String
 		}
 	}
 	
 	private static char[] initializeExtendedAsciiArr() throws IOException {
-		StringBuilder strBuild = new StringBuilder();
-		String tempStr = "";
-		boolean toEnd = false;
+		StringBuilder strBuild = new StringBuilder();//Store the Extended ASCII char to one String
+		String tempStr = "";//Used to append to strBuild
+		boolean toEnd = false;//Cond to end the loop
+		//Get from file
 		BufferedReader reader = UserInputHelper.getExtendedAsciiFromFile();
 			
 		while(!toEnd) {
-			tempStr = reader.readLine();
-			if(tempStr == null) {
+			tempStr = reader.readLine();//read a line of the text file
+			if(tempStr != null) {
+				strBuild.append(tempStr);//append the char to strBuild
+			}else {
 				toEnd = true;
 			}
-			strBuild.append(tempStr);
 		}
-		tempStr = strBuild.toString().trim();
-		return tempStr.toCharArray();
+		tempStr = strBuild.toString();//store the built string to tempStr
+		return tempStr.toCharArray();//Throw tempStr
 	}
 	private static Paragraph createParagraphTabbed(String key, String data,Font font) {
 		Paragraph temp = new Paragraph(key,font);
