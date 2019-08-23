@@ -1,10 +1,12 @@
 package my.utility;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
 public class UserInputHelper {
 	private static BufferedReader getReader(){
@@ -20,14 +22,14 @@ public class UserInputHelper {
 		}
 		return new BufferedReader(new FileReader(inviAsciiLoc));
 	}
-	public static BufferedReader getExtendedAsciiFromFile() throws FileNotFoundException{
+	public static BufferedReader getExtendedAsciiFromFile() throws FileNotFoundException, UnsupportedEncodingException{
 		final String osLinux = "Linux";
 		String extendedAsciiLoc = "E:\\extendedAscii.txt";//TODO Change BufferedReader loc for Extended Ascii
 		if(System.getProperty("os.name").contains(osLinux)) {
 			extendedAsciiLoc = "/home/marcelo/git/MachineProb3/MachineProblem3" + 
 					"/src/my/files/extendedAscii.txt";
 		}
-		return new BufferedReader(new FileReader(extendedAsciiLoc));
+		return new BufferedReader(new InputStreamReader(new FileInputStream(extendedAsciiLoc),"UTF8"));
 	}
 	public static String readString(String msg) throws IOException{
 		System.out.print(msg);
@@ -44,7 +46,7 @@ public class UserInputHelper {
 	}
 	
 	public static void pressToContinue() throws IOException {
-		System.out.println("Press ||ENTER|| to continue!");
+		System.out.println("Press ||AND KEY|| THEN PRESS ||ENTER|| to continue!");
 		getReader().readLine();
 	}
 }

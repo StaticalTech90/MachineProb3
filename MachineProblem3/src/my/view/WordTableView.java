@@ -40,9 +40,6 @@ public class WordTableView {
 		/*
 		 * Initialize Some variables
 		 */
-		int totalVisiCharInUsrWord = countVisibleCharacters(dataTable.getUserWord());
-		int totalInviCharInUsrWord = countInvisibleCharacters(dataTable.getUserWord());
-		int totalCharInUsrWord = countVisibleInvisibleCharacters(totalVisiCharInUsrWord, totalInviCharInUsrWord);
 		int totalEmbdWord = countEmbeddedWord(dataTable.getUserWord(), dataTable.getEmbeddedWord());
 		int charFrequency[] = new int[dataTable.getUserWord().length()];
 		
@@ -80,6 +77,10 @@ public class WordTableView {
 				else {
 					System.out.println("0");
 				}
+				
+				if(i == 127) {
+					UserInputHelper.pressToContinue();
+				}
 			}
 			//Extended Ascii
 			else if(i > 127 && i < 255) {
@@ -103,9 +104,9 @@ public class WordTableView {
 			}
 		}		//END OF FOR LOOP PRINTING
 		System.out.println("Summary:");
-		System.out.println("Total visible characters: " + totalVisiCharInUsrWord);
-		System.out.println("Total invisible characters: " + totalInviCharInUsrWord);
-		System.out.println("Total number of characters: " + totalCharInUsrWord);
+		System.out.println("Total visible characters: " + countVisibleCharacters(dataTable));
+		System.out.println("Total invisible characters: " + countInvisibleCharacters(dataTable));
+		System.out.println("Total number of characters: " + countVisibleInvisibleCharacters(dataTable));
 		System.out.println("No. of embedded searched word: " + totalEmbdWord);
 	}
 	
@@ -113,16 +114,14 @@ public class WordTableView {
 		/*
 		 * Some variables
 		 */
-		final String typeLinux = "Linux";
-		String osType = System.getProperty("os.name");
 		String docLoc = "";
 		String[] inviCharWorded = new String[35]; // 0 - 32 && 127 && 255 ASCII
 		char[] extendedAsciiArr = initializeExtendedAsciiArr(); // 127 - 254
 		int totalEmbdWord = countEmbeddedWord(dataTable.getUserWord(), dataTable.getEmbeddedWord());
 		int charFrequency[] = new int[dataTable.getUserWord().length()];
-		int totalVisiCharInUsrWord = countVisibleCharacters(dataTable.getUserWord());
-		int totalInviCharInUsrWord = countInvisibleCharacters(dataTable.getUserWord());
-		int totalCharInUsrWord = countVisibleInvisibleCharacters(totalVisiCharInUsrWord, totalInviCharInUsrWord);
+		int totalVisiCharInUsrWord = countVisibleCharacters(dataTable);
+		int totalInviCharInUsrWord = countInvisibleCharacters(dataTable);
+		int totalCharInUsrWord = countVisibleInvisibleCharacters(dataTable);
 		
 		//used to get the frequency of a character
 		char userWordAsCharArray[] = countCharOccurances(dataTable.getUserWord(), charFrequency);	
@@ -132,7 +131,7 @@ public class WordTableView {
 		 * Initialize the PDF
 		 */
 		Document asciiDoc = new Document();
-		if(osType.contains(typeLinux)) {
+		if(!isOperatingSystemWindows()) {
 			docLoc = "/home/marcelo/Documents/asciiTable.pdf"; //Me programming on my linux laptop
 		}
 		else {
@@ -253,7 +252,7 @@ public class WordTableView {
 		asciiDoc.add(totalCharactersParagraph);
 		asciiDoc.add(freqOfEmbeddedWordParagraph);
 		
-		if(!System.getProperty("os.name").equals(typeLinux)) {
+		if(isOperatingSystemWindows()) {
 			String imgLoc = "E:\\progger.png"; //Change img loc @ school
 			Image img = Image.getInstance(imgLoc);
 			img.setAlignment(Element.ALIGN_CENTER);
@@ -277,24 +276,24 @@ public class WordTableView {
 	 * COUNTING METHODS
 	 */
 	
-	private static int countVisibleCharacters(String userWord) throws IOException {
+	private static int countVisibleCharacters(WordTable temp) throws IOException {
 		char extendedAsciiArr[] = initializeExtendedAsciiArr();
 		int total = 0; //ONE POINT OF EXIT
-		for(int ctr = 0; ctr < userWord.length();ctr++) {
+		for(int ctr = 0; ctr < temp.getUserWord().length();ctr++) {
 			/*
 			 * If the char at userWord[ctr] is above the invisible letter but under the DEL(128)
 			 * Add to total
 			 */
-			if(userWord.charAt(ctr) < 127 && userWord.charAt(ctr) > 32) {
+			if(temp.getUserWord().charAt(ctr) < 127 && temp.getUserWord().charAt(ctr) > 32) {
 				total++;
 			}
 			/*
 			 * Check if the char doesn't fall under the standard ASCII 128 Table
 			 * If it's greater than 128 but under the Extended ASCII Table, add +1 to total
 			 */
-			else if (userWord.charAt(ctr) > 127) {
+			else if (temp.getUserWord().charAt(ctr) > 127) {
 				for (int i = 0; i < extendedAsciiArr.length; i++) {
-					if(userWord.charAt(ctr) == extendedAsciiArr[i]) {
+					if(temp.getUserWord().charAt(ctr) == extendedAsciiArr[i]) {
 						total++;
 					}	
 				}
@@ -304,26 +303,31 @@ public class WordTableView {
 		return total;
 	}
 	
-	private static int countInvisibleCharacters(String userWord) throws IOException{
+	private static int countInvisibleCharacters(WordTable temp) throws IOException{
 		String inviCharWorded[] = new String [35];
 		initializeInviCharArr(inviCharWorded);
 		int total = 0;
-		for(int ctr = 0; ctr < userWord.length();ctr++) {
-			if(userWord.charAt(ctr) < 33 || userWord.charAt(ctr) == 127 || userWord.equals(inviCharWorded[34]))
+		for(int ctr = 0; ctr < temp.getUserWord().length();ctr++) {
+			if(temp.getUserWord().charAt(ctr) < 33 || temp.getUserWord().charAt(ctr) == 127 || temp.getUserWord().equals(inviCharWorded[34]))
 				total+=1;
 		}
 		
 		return total;
 	}
 	
-	private static int countVisibleInvisibleCharacters(int totalVisi, int totalInvi) {
-		return totalVisi + totalInvi;
+	private static int countVisibleInvisibleCharacters(WordTable temp) throws IOException {
+		return countVisibleCharacters(temp) + countInvisibleCharacters(temp);
 	}
 	
+	/*
+	 * Logic of Counting Frequency of Character
+	 * 1. Have 2 Arrays: Frequency and a character array of the String
+	 * 2. 
+	 */
 	private static char[] countCharOccurances(String usrWord, int freqArr[]) {
 		char wordArr[] = usrWord.toCharArray();
 		for(int outerCtr = 0; outerCtr < wordArr.length; outerCtr++) {
-			freqArr[outerCtr] = 1;
+			freqArr[outerCtr] = 1; // Assume that the string has data and is not null nor empty
 			for(int innerCtr = outerCtr+1; innerCtr < wordArr.length; innerCtr++)
 				if(wordArr[outerCtr] == wordArr[innerCtr]) {
 					freqArr[outerCtr]+=1;
@@ -352,6 +356,15 @@ public class WordTableView {
 	private static boolean hasSymbol(String symbol,String userWord) {
 		boolean hasSym = userWord.contains(symbol) ? true : false;
 		return hasSym;
+	}
+
+	private static boolean isOperatingSystemWindows() {
+		final String osWindows = "Windows";
+		boolean isWindows = false;
+		if(System.getProperty("os.name").contains(osWindows)) {
+			isWindows = true;
+		}
+		return isWindows;
 	}
 	/*
 	 * OTHERS
