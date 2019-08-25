@@ -308,7 +308,7 @@ public class WordTableView {
 		initializeInviCharArr(inviCharWorded);
 		int total = 0;
 		for(int ctr = 0; ctr < temp.getUserWord().length();ctr++) {
-			if(temp.getUserWord().charAt(ctr) < 33 || temp.getUserWord().charAt(ctr) == 127 || temp.getUserWord().equals(inviCharWorded[34]))
+			if(temp.getUserWord().charAt(ctr) < 33 || temp.getUserWord().charAt(ctr) == 127 || temp.getUserWord().equals(Character.toString((char)0x00A0)))
 				total+=1;
 		}
 		
