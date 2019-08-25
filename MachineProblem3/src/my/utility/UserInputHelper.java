@@ -46,7 +46,7 @@ public class UserInputHelper {
 	}
 	
 	public static void pressToContinue() throws IOException {
-		System.out.println("Press ||AND KEY|| THEN PRESS ||ENTER|| to continue!");
+		System.out.println("Press ||ANY KEY|| THEN PRESS ||ENTER|| to continue!");
 		getReader().readLine();
 	}
 }
