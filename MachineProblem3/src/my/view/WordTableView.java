@@ -17,6 +17,7 @@ import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.TabSettings;
+import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -144,13 +145,17 @@ public class WordTableView {
 		/*
 		 * COLUMN IDENTIFIERS && PDF APPEARANCE
 		 */
+		String arialFontLoc = "C://Windows//Fonts//Arial.ttf";
 		
 		PdfPTable asciiTable = new PdfPTable(3); //Specifies to have 3 COLUMNS
+		
+		BaseFont arialBaseFont = BaseFont.createFont(arialFontLoc,BaseFont.IDENTITY_H,BaseFont.EMBEDDED);
 		
 		Font headerFont = FontFactory.getFont(FontFactory.TIMES,18,BaseColor.BLACK);
 		Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD,24,BaseColor.BLACK);
 		Font subTitleFont = FontFactory.getFont(FontFactory.COURIER,19,BaseColor.DARK_GRAY);		
-
+		Font cellSymbolFont = new Font(arialBaseFont);
+		
 		Paragraph deciCodeParagraph = new Paragraph("Decimal Code",headerFont);
 		Paragraph charSymbolParagrapj = new Paragraph("Character",headerFont);
 		Paragraph summaryTextParagraph = new Paragraph("Summary:");
@@ -223,7 +228,8 @@ public class WordTableView {
 			}
 			//Extended Ascii
 			else if(i > 127 && i < 255) {
-				asciiTable.addCell(Character.toString(extendedAsciiString.charAt(i-128)));
+				
+				asciiTable.addCell(new Paragraph(Character.toString(extendedAsciiString.charAt(i-128)),cellSymbolFont));
 				if(hasSymbol(Character.toString(extendedAsciiString.charAt(i-128)), dataTable.getUserWord())) {
 					asciiTable.addCell(printCharOccurances(extendedAsciiString.charAt(i-128),userWordAsCharArray, charFrequency));;
 				}
@@ -395,6 +401,7 @@ public class WordTableView {
 		tempStr = strBuild.toString();//store the built string to tempStr
 		return tempStr;//Throw tempStr
 	}
+	
 	private static Paragraph createParagraphTabbed(String key, String data,Font font) {
 		Paragraph temp = new Paragraph(key,font);
 		temp.setIndentationLeft(50f);
