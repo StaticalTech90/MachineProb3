@@ -29,7 +29,7 @@ public class UserInputHelper {
 			extendedAsciiLoc = "/home/marcelo/git/MachineProb3/MachineProblem3" + 
 					"/src/my/files/extendedAscii.txt";
 		}
-		return new BufferedReader(new InputStreamReader(new FileInputStream(extendedAsciiLoc),"UTF8"));
+		return new BufferedReader(new InputStreamReader(new FileInputStream(extendedAsciiLoc),"UTF-8"));
 	}
 	public static String readString(String msg) throws IOException{
 		System.out.print(msg);

@@ -46,6 +46,7 @@ public class WordTableView {
 		
 		String[] inviCharWorded = new String[35]; // 0 - 32 && 127 && 255 ASCII
 		String extendedAsciiString = initializeExtendedAsciiString(); // 127 - 254
+		
 		//used to get the frequency of a character
 		char userWordAsCharArray[] = countCharOccurances(dataTable.getUserWord(), charFrequency);	
 		
@@ -205,7 +206,6 @@ public class WordTableView {
 		/*
 		 * ASCII PRINTING
 		 */
-
 		for (int i = 0; i < 256; i++) {
 			char symbol = (char) i;
 			
