@@ -44,7 +44,7 @@ public class WordTableView {
 		int charFrequency[] = new int[dataTable.getUserWord().length()];
 		
 		String[] inviCharWorded = new String[35]; // 0 - 32 && 127 && 255 ASCII
-		char[] extendedAsciiArr = initializeExtendedAsciiArr(); // 127 - 254
+		String extendedAsciiString = initializeExtendedAsciiString(); // 127 - 254
 		//used to get the frequency of a character
 		char userWordAsCharArray[] = countCharOccurances(dataTable.getUserWord(), charFrequency);	
 		
@@ -84,8 +84,8 @@ public class WordTableView {
 			}
 			//Extended Ascii
 			else if(i > 127 && i < 255) {
-				System.out.print(i+"\t"+ extendedAsciiArr[i-128] +"\t\t\t");
-				if(hasSymbol(Character.toString(extendedAsciiArr[i-128]), dataTable.getUserWord())) {
+				System.out.print(i+"\t"+ extendedAsciiString.charAt(i-128) +"\t\t\t");
+				if(hasSymbol(Character.toString(extendedAsciiString.charAt(i-128)), dataTable.getUserWord())) {
 					System.out.println(printCharOccurances(symbol,userWordAsCharArray, charFrequency));
 				}
 				else {
@@ -116,7 +116,7 @@ public class WordTableView {
 		 */
 		String docLoc = "";
 		String[] inviCharWorded = new String[35]; // 0 - 32 && 127 && 255 ASCII
-		char[] extendedAsciiArr = initializeExtendedAsciiArr(); // 127 - 254
+		String extendedAsciiString = initializeExtendedAsciiString(); // 127 - 254
 		int totalEmbdWord = countEmbeddedWord(dataTable.getUserWord(), dataTable.getEmbeddedWord());
 		int charFrequency[] = new int[dataTable.getUserWord().length()];
 		int totalVisiCharInUsrWord = countVisibleCharacters(dataTable);
@@ -149,8 +149,8 @@ public class WordTableView {
 		
 		Font headerFont = FontFactory.getFont(FontFactory.TIMES,18,BaseColor.BLACK);
 		Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD,24,BaseColor.BLACK);
-		Font subTitleFont = FontFactory.getFont(FontFactory.COURIER,19,BaseColor.DARK_GRAY);
-		
+		Font subTitleFont = FontFactory.getFont(FontFactory.COURIER,19,BaseColor.DARK_GRAY);		
+
 		Paragraph deciCodeParagraph = new Paragraph("Decimal Code",headerFont);
 		Paragraph charSymbolParagrapj = new Paragraph("Character",headerFont);
 		Paragraph summaryTextParagraph = new Paragraph("Summary:");
@@ -164,6 +164,7 @@ public class WordTableView {
 				+ Integer.toString(totalCharInUsrWord));
 		Paragraph freqOfEmbeddedWordParagraph = new Paragraph("Total occurances of embedded word: "
 				+ Integer.toString(totalEmbdWord));
+		
 		PdfPCell deciCodeIdentifier = new PdfPCell(deciCodeParagraph);
 		PdfPCell charSymbolIdentifier = new PdfPCell(charSymbolParagrapj);
 		PdfPCell occNumIdentifier = new PdfPCell(occNumParagraph);
@@ -207,7 +208,7 @@ public class WordTableView {
 			//Print out the invisible chars from 0 - 32 && chars 127 and 255
 			if(i < 33 || i == 127 || i == 255) {
 				if(i == 127) {
-					asciiTable.addCell(inviCharWorded[33]);;
+					asciiTable.addCell(inviCharWorded[33]);
 				}else if (i == 255) {
 					asciiTable.addCell(inviCharWorded[34]);
 				}else {
@@ -222,9 +223,9 @@ public class WordTableView {
 			}
 			//Extended Ascii
 			else if(i > 127 && i < 255) {
-				asciiTable.addCell(Character.toString(extendedAsciiArr[i-128]));
-				if(hasSymbol(Character.toString(extendedAsciiArr[i-128]), dataTable.getUserWord())) {
-					asciiTable.addCell(printCharOccurances(extendedAsciiArr[i-128],userWordAsCharArray, charFrequency));;
+				asciiTable.addCell(Character.toString(extendedAsciiString.charAt(i-128)));
+				if(hasSymbol(Character.toString(extendedAsciiString.charAt(i-128)), dataTable.getUserWord())) {
+					asciiTable.addCell(printCharOccurances(extendedAsciiString.charAt(i-128),userWordAsCharArray, charFrequency));;
 				}
 				else {
 					asciiTable.addCell("0");
@@ -277,7 +278,7 @@ public class WordTableView {
 	 */
 	
 	private static int countVisibleCharacters(WordTable temp) throws IOException {
-		char extendedAsciiArr[] = initializeExtendedAsciiArr();
+		String extendedAsciiString = initializeExtendedAsciiString();
 		int total = 0; //ONE POINT OF EXIT
 		for(int ctr = 0; ctr < temp.getUserWord().length();ctr++) {
 			/*
@@ -292,8 +293,8 @@ public class WordTableView {
 			 * If it's greater than 128 but under the Extended ASCII Table, add +1 to total
 			 */
 			else if (temp.getUserWord().charAt(ctr) > 127) {
-				for (int i = 0; i < extendedAsciiArr.length; i++) {
-					if(temp.getUserWord().charAt(ctr) == extendedAsciiArr[i]) {
+				for (int i = 0; i < extendedAsciiString.length(); i++) {
+					if(temp.getUserWord().charAt(ctr) == extendedAsciiString.charAt(i)) {
 						total++;
 					}	
 				}
@@ -376,7 +377,7 @@ public class WordTableView {
 		}
 	}
 	
-	private static char[] initializeExtendedAsciiArr() throws IOException {
+	private static String initializeExtendedAsciiString() throws IOException {
 		StringBuilder strBuild = new StringBuilder();//Store the Extended ASCII char to one String
 		String tempStr = "";//Used to append to strBuild
 		boolean toEnd = false;//Cond to end the loop
@@ -392,7 +393,7 @@ public class WordTableView {
 			}
 		}
 		tempStr = strBuild.toString();//store the built string to tempStr
-		return tempStr.toCharArray();//Throw tempStr
+		return tempStr;//Throw tempStr
 	}
 	private static Paragraph createParagraphTabbed(String key, String data,Font font) {
 		Paragraph temp = new Paragraph(key,font);
