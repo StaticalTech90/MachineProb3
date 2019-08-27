@@ -22,6 +22,7 @@ public class UserInputHelper {
 		}
 		return new BufferedReader(new FileReader(inviAsciiLoc));
 	}
+
 	public static BufferedReader getExtendedAsciiFromFile() throws FileNotFoundException, UnsupportedEncodingException{
 		final String osLinux = "Linux";
 		String extendedAsciiLoc = "E:\\extendedAscii.txt";//TODO Change BufferedReader loc for Extended Ascii
