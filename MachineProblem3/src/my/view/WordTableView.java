@@ -41,11 +41,11 @@ public class WordTableView {
 		/*
 		 * Initialize variables
 		 */
-		int charFrequency[] = new int[dataTable.getUserWord().length()];
+		int charFrequency[] = buildCharOccurancesList(dataTable.getUserWord());
 		
 		String[] inviCharWorded = getWordedInvisibleASCIICharacters(); // 0 - 32 && 127 && 255 ASCII
 		String extendedAsciiString = getExtendedASCIICharacters(); // 127 - 254
-		char userWordAsCharArray[] = countCharOccurances(dataTable.getUserWord(), charFrequency);//used to get the frequency of a character
+		String keyForCharacterOccurances = buildCharOccurancesKey(dataTable.getUserWord());//used to get the frequency of a character
 		//Top of the Console
 		System.out.println("\tMagday's ASCII Table\n");
 		System.out.println("User Word: \t" + dataTable.getUserWord());
@@ -66,7 +66,7 @@ public class WordTableView {
 					System.out.print(i+"\t"+inviCharWorded[i]+"\t");
 				}
 				if(hasSymbol(Character.toString(symbol), dataTable.getUserWord())) {
-					System.out.println(printCharOccurances(symbol,userWordAsCharArray, charFrequency));
+					System.out.println(printCharOccurances(symbol,keyForCharacterOccurances, charFrequency));
 				}
 				else {
 					System.out.println("0");
@@ -80,7 +80,7 @@ public class WordTableView {
 			else if(i > 127 && i < 255) {
 				System.out.print(i+"\t"+ extendedAsciiString.charAt(i-128) +"\t\t\t");
 				if(hasSymbol(Character.toString(extendedAsciiString.charAt(i-128)), dataTable.getUserWord())) {
-					System.out.println(printCharOccurances(symbol,userWordAsCharArray, charFrequency));
+					System.out.println(printCharOccurances(symbol,keyForCharacterOccurances, charFrequency));
 				}
 				else {
 					System.out.println("0");
@@ -90,7 +90,7 @@ public class WordTableView {
 			else {
 				System.out.print(i+"\t"+ symbol +"\t\t\t");
 				if(hasSymbol(Character.toString(symbol), dataTable.getUserWord())) {
-					System.out.println(printCharOccurances(symbol,userWordAsCharArray, charFrequency));
+					System.out.println(printCharOccurances(symbol,keyForCharacterOccurances, charFrequency));
 				}
 				else {
 					System.out.println("0");
@@ -103,14 +103,13 @@ public class WordTableView {
 		System.out.println("Total number of characters: " + countTotalCharacters(dataTable));
 		System.out.println("No. of embedded searched word: " + countEmbeddedWord(dataTable));
 	}
-	
 	public static void printToPDF(WordTable dataTable) throws DocumentException, IOException {
 //		ASCII RELATED VARIABLES
 		String docLoc = "/home/marcelo/Documents/asciiTable.pdf"; // DEFAULT IS LINUX
 		String[] inviCharWorded = getWordedInvisibleASCIICharacters(); // 0 - 32 && 127 && 255 ASCII
 		String extendedAsciiString = getExtendedASCIICharacters(); // 127 - 254
-		int charFrequency[] = new int[dataTable.getUserWord().length()];
-		char userWordAsCharArray[] = countCharOccurances(dataTable.getUserWord(), charFrequency);//used to get the frequency of a character
+		String keyForCharacterOccurances = buildCharOccurancesKey(dataTable.getUserWord());//used to get the frequency of a character
+		int charOccurances[] = buildCharOccurancesList(dataTable.getUserWord());
 //		PDF VARIABLES
 		String arialFontLoc = "C://Windows//Fonts//Arial.ttf";
 		PdfPTable asciiTable = new PdfPTable(3); //Specifies to have 3 COLUMNS
@@ -141,13 +140,15 @@ public class WordTableView {
 		PdfPCell occNumIdentifier = new PdfPCell(occNumParagraph);
 //		Initialize PDF
 		Document asciiDoc = new Document();
-		if(isOperatingSystemWindows()) {
+		if(UserInputHelper.isWindowsSystem()) {
 			docLoc = "E:\\asciiTable.pdf"; //TODO Change loc @ School
 		}
+
 		PdfWriter.getInstance(asciiDoc, 
 				new FileOutputStream(docLoc));
 		
 		asciiDoc.open();
+		
 //		PDF APPEARANCE
 		asciiTable.setHeaderRows(1);
 		asciiTable.setSpacingBefore(20f);
@@ -188,7 +189,7 @@ public class WordTableView {
 					asciiTable.addCell(inviCharWorded[i]);
 				}
 				if(hasSymbol(Character.toString(symbol), dataTable.getUserWord())) {
-					asciiTable.addCell(printCharOccurances(symbol,userWordAsCharArray, charFrequency));
+					asciiTable.addCell(printCharOccurances(symbol,keyForCharacterOccurances, charOccurances));
 				}
 				else {
 					asciiTable.addCell("0");
@@ -199,7 +200,7 @@ public class WordTableView {
 				
 				asciiTable.addCell(new Paragraph(Character.toString(extendedAsciiString.charAt(i-128)),cellSymbolFont));
 				if(hasSymbol(Character.toString(extendedAsciiString.charAt(i-128)), dataTable.getUserWord())) {
-					asciiTable.addCell(printCharOccurances(extendedAsciiString.charAt(i-128),userWordAsCharArray, charFrequency));;
+					asciiTable.addCell(printCharOccurances(extendedAsciiString.charAt(i-128),keyForCharacterOccurances, charOccurances));;
 				}
 				else {
 					asciiTable.addCell("0");
@@ -209,7 +210,7 @@ public class WordTableView {
 			else {
 				asciiTable.addCell(Character.toString(symbol));
 				if(hasSymbol(Character.toString(symbol), dataTable.getUserWord())) {
-					asciiTable.addCell(printCharOccurances(symbol,userWordAsCharArray, charFrequency));;
+					asciiTable.addCell(printCharOccurances(symbol,keyForCharacterOccurances, charOccurances));;
 				}
 				else {
 					asciiTable.addCell("0");
@@ -227,7 +228,7 @@ public class WordTableView {
 		asciiDoc.add(totalCharactersParagraph);
 		asciiDoc.add(freqOfEmbeddedWordParagraph);
 		
-		if(isOperatingSystemWindows()) {
+		if(UserInputHelper.isWindowsSystem()) {
 			String imgLoc = "E:\\progger.png"; //Change img loc @ school
 			Image img = Image.getInstance(imgLoc);
 			img.setAlignment(Element.ALIGN_CENTER);
@@ -305,31 +306,36 @@ public class WordTableView {
 		return total;
 	}
 	
-	private static char[] countCharOccurances(String usrWord, int freqArr[]) {
-		char wordArr[] = usrWord.toCharArray();
-		for(int outerCtr = 0; outerCtr < wordArr.length; outerCtr++) {
-			freqArr[outerCtr] = 1; // Assume that the string has data and is not null nor empty
-			for(int innerCtr = outerCtr+1; innerCtr < wordArr.length; innerCtr++)
-				if(wordArr[outerCtr] == wordArr[innerCtr]) {
-					freqArr[outerCtr]+=1;
-					wordArr[innerCtr] = (char)0; // Set To null so we dont go back reading the character
+	private static String buildCharOccurancesKey(String usrWord) {
+		char usrWordArr[] = usrWord.toCharArray();
+		for (int outerCtr = 0; outerCtr < usrWordArr.length; outerCtr++) {
+			for (int innerCtr = outerCtr+1; innerCtr < usrWordArr.length; innerCtr++) {
+				if(usrWordArr[outerCtr] == usrWordArr[innerCtr]) {
+					usrWordArr[innerCtr] = (char) 0; //Puts an empty character on the String
 				}
+			}
 		}
-		return wordArr;
+		usrWord = String.copyValueOf(usrWordArr);
+		return usrWord;
 	}
 	
+	private static int[] buildCharOccurancesList(String usrWord) {
+		int occuranceKeySize = buildCharOccurancesKey(usrWord).length();
+		int tmp[] = new int[occuranceKeySize];
+		for (int outerCtr = 0; outerCtr < occuranceKeySize; outerCtr++) {
+			tmp[outerCtr] = 1;
+			for(int innerCtr = outerCtr+1; innerCtr < occuranceKeySize; innerCtr++) {
+				if(usrWord.charAt(outerCtr) == usrWord.charAt(innerCtr)) {
+					tmp[outerCtr] +=1 ;
+					usrWord.replace(usrWord.charAt(innerCtr), (char)0);
+				}
+			}
+		}
+		return tmp;
+	}
 	private static boolean hasSymbol(String symbol,String userWord) {
 		boolean hasSym = userWord.contains(symbol) ? true : false;
 		return hasSym;
-	}
-
-	private static boolean isOperatingSystemWindows() {
-		final String osWindows = "Windows";
-		boolean isWindows = false;
-		if(System.getProperty("os.name").contains(osWindows)) {
-			isWindows = true;
-		}
-		return isWindows;
 	}
 	
 	private static String[] getWordedInvisibleASCIICharacters() throws FileNotFoundException, IOException {
@@ -362,10 +368,10 @@ public class WordTableView {
 		return tempStr;//Throw tempStr
 	}
 	
-	private static String printCharOccurances(char symbol, char[] usrWord, int freqArr[]) {
+	private static String printCharOccurances(char symbol, String keyForOccurances, int freqArr[]) {
 		String temp = "";
-		for (int i = 0; i < usrWord.length; i++) {
-			if(usrWord[i] ==  symbol) {
+		for (int i = 0; i < keyForOccurances.length(); i++) {
+			if(keyForOccurances.charAt(i) ==  symbol) {
 				temp=Integer.toString(freqArr[i]);
 			}
 		}
@@ -381,4 +387,5 @@ public class WordTableView {
 		temp.add(data);
 		return temp;
 	}
+	
 }
