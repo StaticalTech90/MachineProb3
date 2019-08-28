@@ -197,8 +197,8 @@ public class WordTableView {
 			}
 			//Extended Ascii
 			else if(i > 127 && i < 255) {
-				
 				asciiTable.addCell(new Paragraph(Character.toString(extendedAsciiString.charAt(i-128)),cellSymbolFont));
+				
 				if(hasSymbol(Character.toString(extendedAsciiString.charAt(i-128)), dataTable.getUserWord())) {
 					asciiTable.addCell(printCharOccurances(extendedAsciiString.charAt(i-128),keyForCharacterOccurances, charOccurances));;
 				}
@@ -297,7 +297,7 @@ public class WordTableView {
 		return total;
 	}
 	
-	private static int countTotalLinesFromFile() throws FileNotFoundException, IOException {
+	private static int countTotalLinesofInvisibleAsciiTextFile() throws FileNotFoundException, IOException {
 		BufferedReader reader = UserInputHelper.getInviAsciiFromFile();
 		int total = 0;
 		for(String tmp = ""; tmp != null ; tmp = reader.readLine()) {
@@ -307,6 +307,12 @@ public class WordTableView {
 	}
 	
 	private static String buildCharOccurancesKey(String usrWord) {
+		/*
+		 * Strings are immutable therefore in order to get rid of the extra characters I need to store the string as a character array
+		 * The Outer Loop is for the element at X
+		 * The Inner Loop is comparing for the Elements at X+1
+		 * Should the Inner Loop find X and X+1 Equal then convert the char at X+1 to null or (char) 0
+		 */
 		char usrWordArr[] = usrWord.toCharArray();
 		for (int outerCtr = 0; outerCtr < usrWordArr.length; outerCtr++) {
 			for (int innerCtr = outerCtr+1; innerCtr < usrWordArr.length; innerCtr++) {
@@ -320,26 +326,41 @@ public class WordTableView {
 	}
 	
 	private static int[] buildCharOccurancesList(String usrWord) {
-		int occuranceKeySize = buildCharOccurancesKey(usrWord).length();
-		int tmp[] = new int[occuranceKeySize];
+		/*
+		 * Strings are immutable therefore in order to get rid of the extra characters I need to store the string as a character array
+		 * The Outer Loop is for the element at X
+		 * The Inner Loop is comparing for the Elements at X+1
+		 * Should the Inner Loop find X and X+1 Equal then convert the char at X+1 to null or (char) 0
+		 */
+		int occuranceKeySize = buildCharOccurancesKey(usrWord).length(); 
+		char usrWordArr[] = usrWord.toCharArray();
+		int tmp[] = new int[occuranceKeySize]; //Array that contains frequency of characters
+		/*
+		 * HOW IT WORKS
+		 * OuterCtr = Element at X
+		 * InnerCtr = Element at X+1
+		 * if usrWord charAt X and charAt X+1 are equal, then increment the value of tmp[x] by 1
+		 * and also replace the character the charAt innerCtr to null/emptyString
+		 */
 		for (int outerCtr = 0; outerCtr < occuranceKeySize; outerCtr++) {
 			tmp[outerCtr] = 1;
 			for(int innerCtr = outerCtr+1; innerCtr < occuranceKeySize; innerCtr++) {
 				if(usrWord.charAt(outerCtr) == usrWord.charAt(innerCtr)) {
 					tmp[outerCtr] +=1 ;
-					usrWord.replace(usrWord.charAt(innerCtr), (char)0);
+					usrWordArr[innerCtr] = (char)0; //"Delete" that character
 				}
 			}
 		}
 		return tmp;
 	}
+	
 	private static boolean hasSymbol(String symbol,String userWord) {
 		boolean hasSym = userWord.contains(symbol) ? true : false;
 		return hasSym;
 	}
 	
 	private static String[] getWordedInvisibleASCIICharacters() throws FileNotFoundException, IOException {
-		int totalStringsToGet = countTotalLinesFromFile();
+		int totalStringsToGet = countTotalLinesofInvisibleAsciiTextFile();
 		String tmp[] = new String[totalStringsToGet];
 		BufferedReader reader = UserInputHelper.getInviAsciiFromFile();//Open File
 		
