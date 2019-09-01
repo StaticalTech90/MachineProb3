@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 public class UserInputHelper {
 	private static BufferedReader getReader(){
@@ -35,7 +36,7 @@ public class UserInputHelper {
 		if(isWindowsSystem()) {
 			extendedAsciiLoc = "E:\\extendedAscii.txt";
 		}
-		return new BufferedReader(new InputStreamReader(new FileInputStream(extendedAsciiLoc),"UTF-8"));
+		return new BufferedReader(new InputStreamReader(new FileInputStream(extendedAsciiLoc),StandardCharsets.UTF_8.name()));
 	}
 	public static String readString(String msg) throws IOException{
 		System.out.print(msg);

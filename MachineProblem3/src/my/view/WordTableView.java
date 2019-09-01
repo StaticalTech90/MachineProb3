@@ -24,15 +24,6 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import my.utility.UserInputHelper;
 
-/*
- * TODO LIST
- * FINISHED count the number of each character occurence and display it on the table using ASCII table.
- * FINISHED count the number of visible characters
- * FINISHED count the number of invisible characters
- * FINISHED count the total number of visible and invisible characters
- * count the number of embedded search words
- */
-
 public class WordTableView {
 	/*
 	 * PRINTING METHODS
@@ -103,6 +94,7 @@ public class WordTableView {
 		System.out.println("Total number of characters: " + countTotalCharacters(dataTable));
 		System.out.println("No. of embedded searched word: " + countEmbeddedWord(dataTable));
 	}
+	
 	public static void printToPDF(WordTable dataTable) throws DocumentException, IOException {
 //		ASCII RELATED VARIABLES
 		String docLoc = "/home/marcelo/Documents/asciiTable.pdf"; // DEFAULT IS LINUX
@@ -162,8 +154,8 @@ public class WordTableView {
 		freqOfEmbeddedWordParagraph.setIndentationLeft(50f);
 		
 		asciiDoc.add(pdfTitleParagraph);;
-		asciiDoc.add(createParagraphTabbed("User Word: ", dataTable.getUserWord(), subTitleFont));
-		asciiDoc.add(createParagraphTabbed("Embedded Word: ", dataTable.getEmbeddedWord(), subTitleFont));
+		asciiDoc.add(createTabbedParagraph("User Word: ", dataTable.getUserWord(), subTitleFont));
+		asciiDoc.add(createTabbedParagraph("Embedded Word: ", dataTable.getEmbeddedWord(), subTitleFont));
 		
 //		SET ALIGNMENT OF HEADERS
 		deciCodeIdentifier.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -399,7 +391,7 @@ public class WordTableView {
 		return temp;
 	}
 	
-	private static Paragraph createParagraphTabbed(String key, String data,Font font) {
+	private static Paragraph createTabbedParagraph(String key, String data,Font font) {
 		Paragraph temp = new Paragraph(key,font);
 		temp.setIndentationLeft(50f);
 		temp.setAlignment(Element.ALIGN_MIDDLE);
