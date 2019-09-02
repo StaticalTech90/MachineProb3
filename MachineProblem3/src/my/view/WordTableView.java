@@ -274,8 +274,6 @@ public class WordTableView {
 	}
 	
 	private static int countEmbeddedWord(WordTable temp) {
-		String userWord = temp.getUserWord();
-		String embeddedWord = temp.getEmbeddedWord();
 		int total = 0;
 		/*
 		 * How it works
@@ -283,8 +281,8 @@ public class WordTableView {
 		 * 2.)Divide the sum to the length of the embedded word
 		 * 3.)Quotient is the total removed subString
 		 */
-		if(!userWord.isEmpty() && !embeddedWord.isEmpty()) {
-			total = (userWord.length() - userWord.replace(embeddedWord, "").length()) / embeddedWord.length();
+		if(!temp.getUserWord().isEmpty() && !temp.getEmbeddedWord().isEmpty()) {
+			total = (temp.getUserWord().length()- temp.getUserWord().replace(temp.getEmbeddedWord(), "").length()) / temp.getEmbeddedWord().length();
 		}
 		return total;
 	}
