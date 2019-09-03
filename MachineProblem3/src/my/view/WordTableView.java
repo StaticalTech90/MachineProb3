@@ -381,9 +381,9 @@ public class WordTableView {
 	
 	private static String printCharOccurances(char symbol, String keyForOccurances, int freqArr[]) {
 		String temp = "";
-		for (int i = 0; i < keyForOccurances.length(); i++) {
-			if(keyForOccurances.charAt(i) ==  symbol) {
-				temp=Integer.toString(freqArr[i]);
+		for (int ctr = 0; ctr < keyForOccurances.length(); ctr++) {
+			if(keyForOccurances.charAt(ctr) ==  symbol) {
+				temp=Integer.toString(freqArr[ctr]);
 			}
 		}
 		return temp;
