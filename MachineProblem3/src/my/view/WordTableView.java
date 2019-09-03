@@ -28,7 +28,7 @@ public class WordTableView {
 	/*
 	 * PRINTING METHODS
 	 */
-	public static void printToConsole(WordTable dataTable) throws IOException {
+	public void printToConsole(WordTable dataTable) throws IOException {
 		/*
 		 * Initialize variables
 		 */
@@ -95,7 +95,7 @@ public class WordTableView {
 		System.out.println("No. of embedded searched word: " + countEmbeddedWord(dataTable));
 	}
 	
-	public static void printToPDF(WordTable dataTable) throws DocumentException, IOException {
+	public void printToPDF(WordTable dataTable) throws DocumentException, IOException {
 //		ASCII RELATED VARIABLES
 		String docLoc = "/home/marcelo/Documents/asciiTable.pdf"; // DEFAULT IS LINUX
 		String[] inviCharWorded = getWordedInvisibleASCIICharacters(); // 0 - 32 && 127 && 255 ASCII
@@ -232,7 +232,7 @@ public class WordTableView {
 		asciiDoc.close();
 	}
 
-	private static int countVisibleCharacters(WordTable temp) throws IOException {
+	private int countVisibleCharacters(WordTable temp) throws IOException {
 		String extendedAsciiString = getExtendedASCIICharacters();
 		int total = 0; //ONE POINT OF EXIT
 		for(int ctr = 0; ctr < temp.getUserWord().length();ctr++) {
@@ -259,7 +259,7 @@ public class WordTableView {
 		return total;
 	}
 	
-	private static int countInvisibleCharacters(WordTable temp) throws IOException{
+	private int countInvisibleCharacters(WordTable temp) throws IOException{
 		int total = 0;
 		for(int ctr = 0; ctr < temp.getUserWord().length();ctr++) {
 			if(temp.getUserWord().charAt(ctr) < 33 || temp.getUserWord().charAt(ctr) == 127 || temp.getUserWord().equals(Character.toString((char)0x00A0)))
@@ -269,11 +269,11 @@ public class WordTableView {
 		return total;
 	}
 	
-	private static int countTotalCharacters(WordTable temp) throws IOException {
+	private int countTotalCharacters(WordTable temp) throws IOException {
 		return countVisibleCharacters(temp) + countInvisibleCharacters(temp);
 	}
 	
-	private static int countEmbeddedWord(WordTable temp) {
+	private int countEmbeddedWord(WordTable temp) {
 		int total = 0;
 		/*
 		 * How it works
@@ -287,7 +287,7 @@ public class WordTableView {
 		return total;
 	}
 	
-	private static int countTotalLinesofInvisibleAsciiTextFile() throws FileNotFoundException, IOException {
+	private int countTotalLinesofInvisibleAsciiTextFile() throws FileNotFoundException, IOException {
 		BufferedReader reader = UserInputHelper.getInviAsciiFromFile();
 		int total = 0;
 		for(String tmp = ""; tmp != null ; tmp = reader.readLine()) {
@@ -296,7 +296,7 @@ public class WordTableView {
 		return total;
 	}
 	
-	private static String buildCharOccurancesKey(String usrWord) {
+	private String buildCharOccurancesKey(String usrWord) {
 		/*
 		 * Strings are immutable therefore in order to get rid of the extra characters I need to store the string as a character array
 		 * The Outer Loop is for the element at X
@@ -315,7 +315,7 @@ public class WordTableView {
 		return usrWord;
 	}
 	
-	private static int[] buildCharOccurancesList(String usrWord) {
+	private int[] buildCharOccurancesList(String usrWord) {
 		/*
 		 * Strings are immutable therefore in order to get rid of the extra characters I need to store the string as a character array
 		 * The Outer Loop is for the element at X
@@ -344,12 +344,12 @@ public class WordTableView {
 		return tmp;
 	}
 	
-	private static boolean hasSymbol(String symbol,String userWord) {
+	private boolean hasSymbol(String symbol,String userWord) {
 		boolean hasSym = userWord.contains(symbol) ? true : false;
 		return hasSym;
 	}
 	
-	private static String[] getWordedInvisibleASCIICharacters() throws FileNotFoundException, IOException {
+	private String[] getWordedInvisibleASCIICharacters() throws FileNotFoundException, IOException {
 		int totalStringsToGet = countTotalLinesofInvisibleAsciiTextFile();
 		String tmp[] = new String[totalStringsToGet];
 		BufferedReader reader = UserInputHelper.getInviAsciiFromFile();//Open File
@@ -360,7 +360,7 @@ public class WordTableView {
 		return tmp;
 	}
 	
-	private static String getExtendedASCIICharacters() throws IOException {
+	private String getExtendedASCIICharacters() throws IOException {
 		StringBuilder strBuild = new StringBuilder();//Store the Extended ASCII char to one String
 		String tempStr = "";//Used to append to strBuild
 		boolean toEnd = false;//Cond to end the loop
@@ -379,7 +379,7 @@ public class WordTableView {
 		return tempStr;//Throw tempStr
 	}
 	
-	private static String printCharOccurances(char symbol, String keyForOccurances, int freqArr[]) {
+	private String printCharOccurances(char symbol, String keyForOccurances, int freqArr[]) {
 		String temp = "";
 		for (int ctr = 0; ctr < keyForOccurances.length(); ctr++) {
 			if(keyForOccurances.charAt(ctr) ==  symbol) {
@@ -389,7 +389,7 @@ public class WordTableView {
 		return temp;
 	}
 	
-	private static Paragraph createTabbedParagraph(String key, String data,Font font) {
+	private Paragraph createTabbedParagraph(String key, String data,Font font) {
 		Paragraph temp = new Paragraph(key,font);
 		temp.setIndentationLeft(50f);
 		temp.setAlignment(Element.ALIGN_MIDDLE);
