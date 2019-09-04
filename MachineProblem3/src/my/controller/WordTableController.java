@@ -4,13 +4,13 @@ import java.io.IOException;
 
 import com.itextpdf.text.DocumentException;
 
-import my.model.WordTable;
+import my.bean.WordTableBean;
 import my.view.WordTableView;
 public class WordTableController {
-	private WordTable model;
+	private WordTableBean model;
 	private WordTableView view;
 	
-	public WordTableController(WordTable model, WordTableView view) {
+	public WordTableController(WordTableBean model, WordTableView view) {
 		this.model = model;
 		this.view = view;
 	}

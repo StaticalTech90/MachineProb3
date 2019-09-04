@@ -1,9 +1,5 @@
 package my.view;
 
-import my.model.WordTable;
-
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -22,21 +18,22 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import my.utility.UserInputHelper;
+import my.bean.WordTableBean;
+import my.utility.UtilitiesAndLogic;
 
 public class WordTableView {
 	/*
 	 * PRINTING METHODS
 	 */
-	public void printToConsole(WordTable dataTable) throws IOException {
+	public void printToConsole(WordTableBean dataTable) throws IOException {
 		/*
 		 * Initialize variables
 		 */
-		int charFrequency[] = buildCharOccurancesList(dataTable.getUserWord());
+		int charFrequency[] = dataTable.buildCharOccurancesList();
 		
-		String[] inviCharWorded = getWordedInvisibleASCIICharacters(); // 0 - 32 && 127 && 255 ASCII
-		String extendedAsciiString = getExtendedASCIICharacters(); // 127 - 254
-		String keyForCharacterOccurances = buildCharOccurancesKey(dataTable.getUserWord());//used to get the frequency of a character
+		String[] inviCharWorded = dataTable.getWordedInvisibleASCIICharacters(); // 0 - 32 && 127 && 255 ASCII
+		String extendedAsciiString = dataTable.getExtendedASCIICharacters(); // 127 - 254
+		String keyForCharacterOccurances = dataTable.buildCharOccurancesKey();//used to get the frequency of a character
 		//Top of the Console
 		System.out.println("\tMagday's ASCII Table\n");
 		System.out.println("User Word: \t" + dataTable.getUserWord());
@@ -56,7 +53,7 @@ public class WordTableView {
 				}else {
 					System.out.print(i+"\t"+inviCharWorded[i]+"\t");
 				}
-				if(hasSymbol(Character.toString(symbol), dataTable.getUserWord())) {
+				if(UtilitiesAndLogic.hasSymbol(Character.toString(symbol), dataTable.getUserWord())) {
 					System.out.println(printCharOccurances(symbol,keyForCharacterOccurances, charFrequency));
 				}
 				else {
@@ -64,13 +61,13 @@ public class WordTableView {
 				}
 				
 				if(i == 127) {
-					UserInputHelper.pressToContinue();
+					UtilitiesAndLogic.pressToContinue();
 				}
 			}
 			//Extended Ascii
 			else if(i > 127 && i < 255) {
 				System.out.print(i+"\t"+ extendedAsciiString.charAt(i-128) +"\t\t\t");
-				if(hasSymbol(Character.toString(extendedAsciiString.charAt(i-128)), dataTable.getUserWord())) {
+				if(UtilitiesAndLogic.hasSymbol(Character.toString(extendedAsciiString.charAt(i-128)), dataTable.getUserWord())) {
 					System.out.println(printCharOccurances(symbol,keyForCharacterOccurances, charFrequency));
 				}
 				else {
@@ -80,7 +77,7 @@ public class WordTableView {
 			//Standard Printable Char
 			else {
 				System.out.print(i+"\t"+ symbol +"\t\t\t");
-				if(hasSymbol(Character.toString(symbol), dataTable.getUserWord())) {
+				if(UtilitiesAndLogic.hasSymbol(Character.toString(symbol), dataTable.getUserWord())) {
 					System.out.println(printCharOccurances(symbol,keyForCharacterOccurances, charFrequency));
 				}
 				else {
@@ -89,19 +86,19 @@ public class WordTableView {
 			}
 		}		//END OF FOR LOOP PRINTING
 		System.out.println("Summary:");
-		System.out.println("Total visible characters: " + countVisibleCharacters(dataTable));
-		System.out.println("Total invisible characters: " + countInvisibleCharacters(dataTable));
-		System.out.println("Total number of characters: " + countTotalCharacters(dataTable));
-		System.out.println("No. of embedded searched word: " + countEmbeddedWord(dataTable));
+		System.out.println("Total visible characters: " + dataTable.countVisibleCharacters());
+		System.out.println("Total invisible characters: " + dataTable.countInvisibleCharacters());
+		System.out.println("Total number of characters: " + dataTable.countTotalCharacters());
+		System.out.println("No. of embedded searched word: " + dataTable.countEmbeddedWord());
 	}
 	
-	public void printToPDF(WordTable dataTable) throws DocumentException, IOException {
+	public void printToPDF(WordTableBean dataTable) throws DocumentException, IOException {
 //		ASCII RELATED VARIABLES
 		String docLoc = "/home/marcelo/Documents/asciiTable.pdf"; // DEFAULT IS LINUX
-		String[] inviCharWorded = getWordedInvisibleASCIICharacters(); // 0 - 32 && 127 && 255 ASCII
-		String extendedAsciiString = getExtendedASCIICharacters(); // 127 - 254
-		String keyForCharacterOccurances = buildCharOccurancesKey(dataTable.getUserWord());//used to get the frequency of a character
-		int charOccurances[] = buildCharOccurancesList(dataTable.getUserWord());
+		String[] inviCharWorded = dataTable.getWordedInvisibleASCIICharacters(); // 0 - 32 && 127 && 255 ASCII
+		String extendedAsciiString = dataTable.getExtendedASCIICharacters(); // 127 - 254
+		String keyForCharacterOccurances = dataTable.buildCharOccurancesKey();//used to get the frequency of a character
+		int charOccurances[] = dataTable.buildCharOccurancesList();
 //		PDF VARIABLES
 		String arialFontLoc = "C://Windows//Fonts//Arial.ttf";
 		PdfPTable asciiTable = new PdfPTable(3); //Specifies to have 3 COLUMNS
@@ -119,20 +116,20 @@ public class WordTableView {
 		
 		Paragraph pdfTitleParagraph = new Paragraph("Magday's ASCII Table",titleFont);
 		Paragraph totalVisibleCharParagraph = new Paragraph("Total visible characters: "
-				+ Integer.toString(countVisibleCharacters(dataTable)));
+				+ Integer.toString(dataTable.countVisibleCharacters()));
 		Paragraph totalInvisibleCharParagraph = new Paragraph("Total invisible characters: "
-				+ Integer.toString(countInvisibleCharacters(dataTable)));
+				+ Integer.toString(dataTable.countInvisibleCharacters()));
 		Paragraph totalCharactersParagraph = new Paragraph("Total number of characters: "
-				+ Integer.toString(countTotalCharacters(dataTable)));
+				+ Integer.toString(dataTable.countTotalCharacters()));
 		Paragraph freqOfEmbeddedWordParagraph = new Paragraph("Total occurances of embedded word: "
-				+ Integer.toString(countEmbeddedWord(dataTable)));
+				+ Integer.toString(dataTable.countEmbeddedWord()));
 		
 		PdfPCell deciCodeIdentifier = new PdfPCell(deciCodeParagraph);
 		PdfPCell charSymbolIdentifier = new PdfPCell(charSymbolParagrapj);
 		PdfPCell occNumIdentifier = new PdfPCell(occNumParagraph);
 //		Initialize PDF
 		Document asciiDoc = new Document();
-		if(UserInputHelper.isWindowsSystem()) {
+		if(UtilitiesAndLogic.isWindowsSystem()) {
 			docLoc = "E:\\asciiTable.pdf"; //TODO Change loc @ School
 		}
 
@@ -180,7 +177,7 @@ public class WordTableView {
 				}else {
 					asciiTable.addCell(inviCharWorded[i]);
 				}
-				if(hasSymbol(Character.toString(symbol), dataTable.getUserWord())) {
+				if(UtilitiesAndLogic.hasSymbol(Character.toString(symbol), dataTable.getUserWord())) {
 					asciiTable.addCell(printCharOccurances(symbol,keyForCharacterOccurances, charOccurances));
 				}
 				else {
@@ -191,7 +188,7 @@ public class WordTableView {
 			else if(i > 127 && i < 255) {
 				asciiTable.addCell(new Paragraph(Character.toString(extendedAsciiString.charAt(i-128)),cellSymbolFont));
 				
-				if(hasSymbol(Character.toString(extendedAsciiString.charAt(i-128)), dataTable.getUserWord())) {
+				if(UtilitiesAndLogic.hasSymbol(Character.toString(extendedAsciiString.charAt(i-128)), dataTable.getUserWord())) {
 					asciiTable.addCell(printCharOccurances(extendedAsciiString.charAt(i-128),keyForCharacterOccurances, charOccurances));;
 				}
 				else {
@@ -201,7 +198,7 @@ public class WordTableView {
 			//Standard Printable Char
 			else {
 				asciiTable.addCell(Character.toString(symbol));
-				if(hasSymbol(Character.toString(symbol), dataTable.getUserWord())) {
+				if(UtilitiesAndLogic.hasSymbol(Character.toString(symbol), dataTable.getUserWord())) {
 					asciiTable.addCell(printCharOccurances(symbol,keyForCharacterOccurances, charOccurances));;
 				}
 				else {
@@ -220,7 +217,7 @@ public class WordTableView {
 		asciiDoc.add(totalCharactersParagraph);
 		asciiDoc.add(freqOfEmbeddedWordParagraph);
 		
-		if(UserInputHelper.isWindowsSystem()) {
+		if(UtilitiesAndLogic.isWindowsSystem()) {
 			String imgLoc = "E:\\progger.png"; //Change img loc @ school
 			Image img = Image.getInstance(imgLoc);
 			img.setAlignment(Element.ALIGN_CENTER);
@@ -230,153 +227,6 @@ public class WordTableView {
 		
 		//FLUSH CONTENTS TO PDF
 		asciiDoc.close();
-	}
-
-	private int countVisibleCharacters(WordTable temp) throws IOException {
-		String extendedAsciiString = getExtendedASCIICharacters();
-		int total = 0; //ONE POINT OF EXIT
-		for(int ctr = 0; ctr < temp.getUserWord().length();ctr++) {
-			/*
-			 * If the char at userWord[ctr] is above the invisible letter but under the DEL(128)
-			 * Add to total
-			 */
-			if(temp.getUserWord().charAt(ctr) < 127 && temp.getUserWord().charAt(ctr) > 32) {
-				total++;
-			}
-			/*
-			 * Check if the char doesn't fall under the standard ASCII 128 Table
-			 * If it's greater than 128 but under the Extended ASCII Table, add +1 to total
-			 */
-			else if (temp.getUserWord().charAt(ctr) > 127) {
-				for (int i = 0; i < extendedAsciiString.length(); i++) {
-					if(temp.getUserWord().charAt(ctr) == extendedAsciiString.charAt(i)) {
-						total++;
-					}	
-				}
-			}
-		}
-		
-		return total;
-	}
-	
-	private int countInvisibleCharacters(WordTable temp) throws IOException{
-		int total = 0;
-		for(int ctr = 0; ctr < temp.getUserWord().length();ctr++) {
-			if(temp.getUserWord().charAt(ctr) < 33 || temp.getUserWord().charAt(ctr) == 127 || temp.getUserWord().equals(Character.toString((char)0x00A0)))
-				total+=1;
-		}
-		
-		return total;
-	}
-	
-	private int countTotalCharacters(WordTable temp) throws IOException {
-		return countVisibleCharacters(temp) + countInvisibleCharacters(temp);
-	}
-	
-	private int countEmbeddedWord(WordTable temp) {
-		int total = 0;
-		/*
-		 * How it works
-		 * 1.)Subtract the Original length to the length without the embedded word
-		 * 2.)Divide the sum to the length of the embedded word
-		 * 3.)Quotient is the total removed subString
-		 */
-		if(!temp.getUserWord().isEmpty() && !temp.getEmbeddedWord().isEmpty()) {
-			total = (temp.getUserWord().length()- temp.getUserWord().replace(temp.getEmbeddedWord(), "").length()) / temp.getEmbeddedWord().length();
-		}
-		return total;
-	}
-	
-	private int countTotalLinesofInvisibleAsciiTextFile() throws FileNotFoundException, IOException {
-		BufferedReader reader = UserInputHelper.getInviAsciiFromFile();
-		int total = 0;
-		for(String tmp = ""; tmp != null ; tmp = reader.readLine()) {
-			total+=1;
-		}
-		return total;
-	}
-	
-	private String buildCharOccurancesKey(String usrWord) {
-		/*
-		 * Strings are immutable therefore in order to get rid of the extra characters I need to store the string as a character array
-		 * The Outer Loop is for the element at X
-		 * The Inner Loop is comparing for the Elements at X+1
-		 * Should the Inner Loop find X and X+1 Equal then convert the char at X+1 to null or (char) 0
-		 */
-		char usrWordArr[] = usrWord.toCharArray();
-		for (int outerCtr = 0; outerCtr < usrWordArr.length; outerCtr++) {
-			for (int innerCtr = outerCtr+1; innerCtr < usrWordArr.length; innerCtr++) {
-				if(usrWordArr[outerCtr] == usrWordArr[innerCtr]) {
-					usrWordArr[innerCtr] = (char) 0; //Puts an empty character on the String
-				}
-			}
-		}
-		usrWord = String.copyValueOf(usrWordArr);
-		return usrWord;
-	}
-	
-	private int[] buildCharOccurancesList(String usrWord) {
-		/*
-		 * Strings are immutable therefore in order to get rid of the extra characters I need to store the string as a character array
-		 * The Outer Loop is for the element at X
-		 * The Inner Loop is comparing for the Elements at X+1
-		 * Should the Inner Loop find X and X+1 Equal then convert the char at X+1 to null or (char) 0
-		 */
-		int occuranceKeySize = buildCharOccurancesKey(usrWord).length(); 
-		char usrWordArr[] = usrWord.toCharArray();
-		int tmp[] = new int[occuranceKeySize]; //Array that contains frequency of characters
-		/*
-		 * HOW IT WORKS
-		 * OuterCtr = Element at X
-		 * InnerCtr = Element at X+1
-		 * if usrWord charAt X and charAt X+1 are equal, then increment the value of tmp[x] by 1
-		 * and also replace the character the charAt innerCtr to null/emptyString
-		 */
-		for (int outerCtr = 0; outerCtr < occuranceKeySize; outerCtr++) {
-			tmp[outerCtr] = 1;
-			for(int innerCtr = outerCtr+1; innerCtr < occuranceKeySize; innerCtr++) {
-				if(usrWord.charAt(outerCtr) == usrWord.charAt(innerCtr)) {
-					tmp[outerCtr] +=1 ;
-					usrWordArr[innerCtr] = (char)0; //"Delete" that character
-				}
-			}
-		}
-		return tmp;
-	}
-	
-	private boolean hasSymbol(String symbol,String userWord) {
-		boolean hasSym = userWord.contains(symbol) ? true : false;
-		return hasSym;
-	}
-	
-	private String[] getWordedInvisibleASCIICharacters() throws FileNotFoundException, IOException {
-		int totalStringsToGet = countTotalLinesofInvisibleAsciiTextFile();
-		String tmp[] = new String[totalStringsToGet];
-		BufferedReader reader = UserInputHelper.getInviAsciiFromFile();//Open File
-		
-		for(int i = 0; i < totalStringsToGet; i++) {
-			tmp[i] = reader.readLine();
-		}
-		return tmp;
-	}
-	
-	private String getExtendedASCIICharacters() throws IOException {
-		StringBuilder strBuild = new StringBuilder();//Store the Extended ASCII char to one String
-		String tempStr = "";//Used to append to strBuild
-		boolean toEnd = false;//Cond to end the loop
-		//Get from file
-		BufferedReader reader = UserInputHelper.getExtendedAsciiFromFile();
-			
-		while(!toEnd) {
-			tempStr = reader.readLine();//read a line of the text file
-			if(tempStr != null) {
-				strBuild.append(tempStr);//append the char to strBuild
-			}else {
-				toEnd = true;
-			}
-		}
-		tempStr = strBuild.toString();//store the built string to tempStr
-		return tempStr;//Throw tempStr
 	}
 	
 	private String printCharOccurances(char symbol, String keyForOccurances, int freqArr[]) {

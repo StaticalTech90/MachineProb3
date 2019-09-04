@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import com.itextpdf.text.DocumentException;
 
-import my.model.WordTable;
+import my.bean.WordTableBean;
 import my.view.WordTableView;
 
 public class ApplicationEntry {
@@ -15,7 +15,7 @@ public class ApplicationEntry {
 	 */
 	public static void main(String[] args) throws DocumentException, IOException {
 		// TODO Auto-generated method stub
-		WordTable myTableData = new WordTable();
+		WordTableBean myTableData = new WordTableBean();
 		WordTableView view = new WordTableView();
 		WordTableController controller = new WordTableController(myTableData, view);
 		
@@ -23,8 +23,8 @@ public class ApplicationEntry {
 			System.out.println("NO DATA IS IN THE ARGUMENTS");
 		}
 		else {
-			myTableData.setUserWord(args[0]);
-			myTableData.setEmbeddedWord(args[1]);
+			controller.setUserWord(args[0]);
+			controller.setEmbeddedWord(args[1]);
 			controller.viewTableData();
 		}
 	}
