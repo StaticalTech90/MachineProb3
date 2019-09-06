@@ -11,7 +11,7 @@ import my.view.WordTableView;
 public class ApplicationEntry {
 	
 	/*
-	 * MVC Reference: https://www.tutorialspoint.com/design_pattern/mvc_pattern.htm
+	 * MVC Reference: https://www.tutorialspoint.com/design_pattern/mvc_pattern.html
 	 * And also Sir Mon's samples in the group :)
 	 */
 	public static void main(String[] args) throws DocumentException, IOException {

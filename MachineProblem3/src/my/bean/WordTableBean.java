@@ -20,6 +20,7 @@ public class WordTableBean {
 	private int totalCharacters;
 	private int occurancesEmbeddedWord;	
 	private int occuranceTable[];
+	
 	/*
 	 * Constructor
 	 */
