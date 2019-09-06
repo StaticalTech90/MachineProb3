@@ -1,6 +1,7 @@
 package my.controller;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import com.itextpdf.text.DocumentException;
 
@@ -23,8 +24,8 @@ public class ApplicationEntry {
 			System.out.println("NO DATA IS IN THE ARGUMENTS");
 		}
 		else {
-			controller.setUserWord(args[0]);
-			controller.setEmbeddedWord(args[1]);
+			controller.setUserWord(new String(args[0].getBytes(StandardCharsets.UTF_8.name())));
+			controller.setEmbeddedWord(new String(args[1].getBytes(StandardCharsets.UTF_8.name())));
 			controller.viewTableData();
 		}
 	}

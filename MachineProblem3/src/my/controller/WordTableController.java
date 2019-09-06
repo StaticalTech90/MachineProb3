@@ -32,6 +32,9 @@ public class WordTableController {
 	}
 	
 	public void viewTableData() throws DocumentException, IOException {
+		model.generateRequiredAscii();
+		model.generateOccuranceList();
+		model.computeCharacters();
 		view.printToConsole(model);
 		view.printToPDF(model);
 	}

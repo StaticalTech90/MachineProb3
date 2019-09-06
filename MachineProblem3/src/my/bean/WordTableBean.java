@@ -3,15 +3,23 @@ package my.bean;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
-import my.utility.UtilitiesAndLogic;
+
+import my.utility.UserInput;
 
 public class WordTableBean {
 	private String userWord;
 	private String embeddedWord;
+	private String occuranceKey;
+	private String invisibleASCIIWorded[];
+	private String extendedASCII;
 	private int totalVisibleCharacters;
 	private int totalInvisibleCharacters;
+	private int totalCharacters;
 	private int occurancesEmbeddedWord;	
+	private int occuranceTable[];
 	/*
 	 * Constructor
 	 */
@@ -38,29 +46,43 @@ public class WordTableBean {
 	public void setEmbeddedWord(String embeddedWord) {
 		this.embeddedWord = embeddedWord;
 	}
+	public String getOccuranceKey() {
+		return occuranceKey;
+	}
+	public String[] getInvisibleASCIIWorded() {
+		return invisibleASCIIWorded;
+	}
+	public String getExtendedASCII() {
+		return extendedASCII;
+	}
 	public int getTotalVisibleCharacters() {
 		return totalVisibleCharacters;
-	}
-	public void setTotalVisibleCharacters(int totalVisibleCharacters) {
-		this.totalVisibleCharacters = totalVisibleCharacters;
 	}
 	public int getTotalInvisibleCharacters() {
 		return totalInvisibleCharacters;
 	}
-	public void setTotalInvisibleCharacters(int totalInvisibleCharacters) {
-		this.totalInvisibleCharacters = totalInvisibleCharacters;
+	public int getTotalCharacters() {
+		return totalCharacters;
 	}
 	public int getOccurancesEmbeddedWord() {
 		return occurancesEmbeddedWord;
 	}
-	public void setOccurancesEmbeddedWord(int occurancesEmbeddedWord) {
-		this.occurancesEmbeddedWord = occurancesEmbeddedWord;
+	public int[] getOccuranceTable() {
+		return occuranceTable;
 	}
 	
 	/*
-	 * 
+	 * Business Logic
 	 */
-	public int countInvisibleCharacters() throws IOException{
+	
+	public void computeCharacters() throws IOException {
+		this.totalVisibleCharacters = countVisibleCharacters();
+		this.totalInvisibleCharacters = countInvisibleCharacters();
+		this.totalCharacters = countTotalCharacters();
+		this.occurancesEmbeddedWord = countEmbeddedWord();
+	}
+	
+	private int countInvisibleCharacters() throws IOException{
 		int total = 0;
 		for(int ctr = 0; ctr < this.userWord.length();ctr++) {
 			if(this.userWord.charAt(ctr) < 33 || this.userWord.charAt(ctr) == 127 || this.userWord.equals(Character.toString((char)0x00A0)))
@@ -69,8 +91,7 @@ public class WordTableBean {
 		return total;
 	}
 	
-	public int countVisibleCharacters() throws IOException {
-//		String extendedAsciiString = getExtendedASCIICharacters();
+	private int countVisibleCharacters() throws IOException {
 		int total = 0; //ONE POINT OF EXIT
 		for(int ctr = 0; ctr <this.userWord.length();ctr++) {
 			/*
@@ -85,8 +106,8 @@ public class WordTableBean {
 			 * If it's greater than 128 but under the Extended ASCII Table, add +1 to total
 			 */
 			else if (this.userWord.charAt(ctr) > 127) {
-				for (int i = 0; i < getExtendedASCIICharacters().length(); i++) {
-					if(this.userWord.charAt(ctr) == getExtendedASCIICharacters().charAt(i)) {
+				for (int i = 0; i < extendedASCII.length(); i++) {
+					if(this.userWord.charAt(ctr) == extendedASCII.charAt(i)) {
 						total++;
 					}	
 				}
@@ -96,11 +117,11 @@ public class WordTableBean {
 		return total;
 	}
 	
-	public int countTotalCharacters() throws IOException {
+	private int countTotalCharacters() throws IOException {
 		return countVisibleCharacters() + countInvisibleCharacters();
 	}
 	
-	public int countEmbeddedWord() {
+	private int countEmbeddedWord() {
 		/*
 		 * How it works
 		 * 1.)Subtract the Original length to the length without the embedded word
@@ -109,19 +130,9 @@ public class WordTableBean {
 		 */
 		return (this.userWord.length()- this.userWord.replace(this.embeddedWord, "").length()) / this.embeddedWord.length();
 	}
-	
-	public void setWordedInvisibleASCIICharacters() throws FileNotFoundException, IOException {
-		int totalStringsToGet = countTotalLinesofInvisibleAsciiTextFile();
-		String tmp[] = new String[totalStringsToGet];
-		BufferedReader reader = UtilitiesAndLogic.getInviAsciiFromFile();//Open File
 		
-		for(int i = 0; i < totalStringsToGet; i++) {
-			tmp[i] = reader.readLine();
-		}
-	}
-	
-	public int countTotalLinesofInvisibleAsciiTextFile() throws FileNotFoundException, IOException {
-		BufferedReader reader = UtilitiesAndLogic.getInviAsciiFromFile();
+	private int countTotalLinesofInvisibleAsciiTextFile() throws FileNotFoundException, IOException {
+		BufferedReader reader = UserInput.getInviAsciiFromFile();
 		int total = 0;
 		for(String tmp = ""; tmp != null ; tmp = reader.readLine()) {
 			total+=1;
@@ -129,7 +140,12 @@ public class WordTableBean {
 		return total;
 	}
 	
-	public String buildCharOccurancesKey() {
+	public void generateOccuranceList() throws UnsupportedEncodingException {
+		occuranceKey = this.buildCharOccurancesKey();
+		occuranceTable = this.buildCharOccurancesTable();
+	}
+	
+	private String buildCharOccurancesKey() throws UnsupportedEncodingException {
 		/*
 		 * Strings are immutable therefore in order to get rid of the extra characters I need to store the string as a character array
 		 * The Outer Loop is for the element at X
@@ -139,23 +155,30 @@ public class WordTableBean {
 		char usrWordArr[] = userWord.toCharArray();
 		for (int outerCtr = 0; outerCtr < usrWordArr.length; outerCtr++) {
 			for (int innerCtr = outerCtr+1; innerCtr < usrWordArr.length; innerCtr++) {
-				if(usrWordArr[outerCtr] == usrWordArr[innerCtr]) {
-					usrWordArr[innerCtr] = (char) 0; //Puts an empty character on the String
+				if(usrWordArr[outerCtr] < 128) {
+					if(usrWordArr[outerCtr] ==  usrWordArr[innerCtr]) {
+						usrWordArr[innerCtr] = (char)0;
+					}
+				}
+				else {
+					if(usrWordArr[outerCtr] == usrWordArr[innerCtr]) {
+						usrWordArr[innerCtr] = (char)0; //"Delete" that character
+					}
 				}
 			}
 		}
-		;
-		return String.copyValueOf(usrWordArr);
+		
+		return new String(String.copyValueOf(usrWordArr).getBytes(StandardCharsets.UTF_8.name()));
 	}
 	
-	public int[] buildCharOccurancesList() {
+	private int[] buildCharOccurancesTable() throws UnsupportedEncodingException {
 		/*
 		 * Strings are immutable therefore in order to get rid of the extra characters I need to store the string as a character array
 		 * The Outer Loop is for the element at X
 		 * The Inner Loop is comparing for the Elements at X+1
 		 * Should the Inner Loop find X and X+1 Equal then convert the char at X+1 to null or (char) 0
 		 */
-		int occuranceKeySize = buildCharOccurancesKey().length(); 
+		int occuranceKeySize = occuranceKey.length(); 
 		char usrWordArr[] = userWord.toCharArray();
 		int tmp[] = new int[occuranceKeySize]; //Array that contains frequency of characters
 		/*
@@ -168,21 +191,35 @@ public class WordTableBean {
 		for (int outerCtr = 0; outerCtr < occuranceKeySize; outerCtr++) {
 			tmp[outerCtr] = 1;
 			for(int innerCtr = outerCtr+1; innerCtr < occuranceKeySize; innerCtr++) {
-				if(userWord.charAt(outerCtr) == userWord.charAt(innerCtr)) {
-					tmp[outerCtr] +=1 ;
-					usrWordArr[innerCtr] = (char)0; //"Delete" that character
+				if(usrWordArr[outerCtr] < 128) {
+					if(usrWordArr[outerCtr] ==  usrWordArr[innerCtr]) {
+						tmp[outerCtr] +=1 ;
+						usrWordArr[innerCtr] = (char)0; //"Delete" that character
+					}
 				}
+				else {
+					if(usrWordArr[outerCtr] == usrWordArr[innerCtr]) {
+						tmp[outerCtr] +=1 ;
+						usrWordArr[innerCtr] = (char)0; //"Delete" that character
+					}
+				}
+				
 			}
 		}
 		return tmp;
 	}
 	
-	public String getExtendedASCIICharacters() throws IOException {
+	public void generateRequiredAscii() throws FileNotFoundException, IOException {
+		this.invisibleASCIIWorded = this.readInvisibleAsciiFile();
+		this.extendedASCII = this.readExtendedAsciiFile();
+	}
+	
+	private String readExtendedAsciiFile() throws IOException {
 		StringBuilder strBuild = new StringBuilder();//Store the Extended ASCII char to one String
 		String tempStr = "";//Used to append to strBuild
 		boolean toEnd = false;//Cond to end the loop
 		//Get from file
-		BufferedReader reader = UtilitiesAndLogic.getExtendedAsciiFromFile();
+		BufferedReader reader = UserInput.getExtendedAsciiFromFile();
 			
 		while(!toEnd) {
 			tempStr = reader.readLine();//read a line of the text file
@@ -192,18 +229,24 @@ public class WordTableBean {
 				toEnd = true;
 			}
 		}
-		tempStr = strBuild.toString();//store the built string to tempStr
+		tempStr = new String(strBuild.toString().getBytes(StandardCharsets.UTF_8.name()));//store the built string to tempStr
 		return tempStr;//Throw tempStr
 	}
 	
-	public String[] getWordedInvisibleASCIICharacters() throws FileNotFoundException, IOException {
+	private String[] readInvisibleAsciiFile() throws FileNotFoundException, IOException {
 		int totalStringsToGet = countTotalLinesofInvisibleAsciiTextFile();
 		String tmp[] = new String[totalStringsToGet];
-		BufferedReader reader = UtilitiesAndLogic.getInviAsciiFromFile();//Open File
+		BufferedReader reader = UserInput.getInviAsciiFromFile();//Open File
 		
 		for(int i = 0; i < totalStringsToGet; i++) {
 			tmp[i] = reader.readLine();
 		}
 		return tmp;
 	}
+	
+	public boolean containsCharacter(char symbol) {
+		boolean hasSym = this.userWord.contains(Character.toString(symbol)) ? true : false;
+		return hasSym;
+	}
+	
 }

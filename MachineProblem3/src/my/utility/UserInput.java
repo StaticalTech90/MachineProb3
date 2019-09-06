@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
-public class UtilitiesAndLogic {
+public class UserInput {
 	private static BufferedReader getReader(){
 		return new BufferedReader(new InputStreamReader(System.in));
 	}
@@ -21,11 +21,6 @@ public class UtilitiesAndLogic {
 			isWindows = true;
 		}
 		return isWindows;
-	}
-	
-	public static boolean hasSymbol(String symbol,String userWord) {
-		boolean hasSym = userWord.contains(symbol) ? true : false;
-		return hasSym;
 	}
 	
 	public static BufferedReader getInviAsciiFromFile() throws FileNotFoundException {
