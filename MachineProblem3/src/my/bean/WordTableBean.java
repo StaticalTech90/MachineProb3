@@ -24,7 +24,8 @@ public class WordTableBean {
 	 * Constructor
 	 */
 	public WordTableBean() {
-		
+		this.userWord = "";
+		this.embeddedWord = "";
 	}
 	public WordTableBean(String userWord,String embeddedWord) throws IOException {
 		this.userWord = userWord;
